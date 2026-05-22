@@ -5,6 +5,7 @@ import cors from "cors";
 import {clerkWebhookHandler} from "./clerk/clerk";
 import meRouter from "./routes/me-router";
 import productRouter from "./routes/product-router";
+import streamRouter from "./routes/stream-router";
 
 const app = express()
 
@@ -30,6 +31,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/me", meRouter)
 app.use("/api/products", productRouter)
+app.use("/api/stream", streamRouter)
 
 // app.get('/', (req, res) => {
 //     res.send('Hello World!')

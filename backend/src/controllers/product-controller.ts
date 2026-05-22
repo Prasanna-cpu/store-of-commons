@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {db} from "../database";
 import {products} from "../database/schema";
 import {eq, and, desc} from "drizzle-orm";
+import {getAllProducts, retrieveCategories, retrieveProductsBySlug} from "../crud-operations/products";
 
 
 export async function allProducts(req : Request, res : Response, next : NextFunction) {
@@ -11,11 +12,7 @@ export async function allProducts(req : Request, res : Response, next : NextFunc
         const activeOnlyProducts = eq(products.active, true)
         const whereClause = category ? and(activeOnlyProducts, eq(products.category, category)) : activeOnlyProducts
 
-        const rows = await db
-            .select()
-            .from(products)
-            .where(whereClause)
-            .orderBy(desc(products.createdAt));
+        const rows = await getAllProducts(whereClause)
 
         return res.status(200).json({
             message : "Products found",
@@ -33,10 +30,7 @@ export async function allProducts(req : Request, res : Response, next : NextFunc
 
 export async function getCategories(req : Request, res : Response, next : NextFunction) {
     try{
-        const rows = await db
-            .select()
-            .from(products)
-            .where(eq(products.active, true))
+        const rows = await retrieveCategories()
 
         // Unique categories by ascending order
         const categories = Array.from(new Set(rows.map(row => row.category)))
@@ -59,11 +53,7 @@ export async function getProductBySlug(req : Request, res : Response, next : Nex
     try{
         const comparatorSlug = (req.params.slug as string).trim()
 
-        const [row] = db
-            .select()
-            .from(products)
-            .where(eq(products.slug, comparatorSlug))
-            .limit(1)
+        const [row] = await retrieveProductsBySlug(comparatorSlug)
 
         if (!row || !row.active){
             return res.status(404).json({
