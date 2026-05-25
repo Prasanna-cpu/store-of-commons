@@ -6,6 +6,7 @@ import {clerkWebhookHandler} from "./clerk/clerk";
 import meRouter from "./routes/me-router";
 import productRouter from "./routes/product-router";
 import streamRouter from "./routes/stream-router";
+import checkoutRouter from "./routes/checkout-router";
 
 const app = express()
 
@@ -13,6 +14,10 @@ const rawJson = express.raw({type : "application/json", limit : "1mb"})
 
 app.post('/webhooks/clerk',rawJson, (req, res) => {
     void clerkWebhookHandler(req, res)
+})
+
+app.post("/webhooks/polar", rawJson, (req , res) => {
+
 })
 
 
@@ -32,6 +37,7 @@ app.get("/health", (req, res) => {
 app.use("/api/me", meRouter)
 app.use("/api/products", productRouter)
 app.use("/api/stream", streamRouter)
+app.use("/api/checkout", checkoutRouter)
 
 // app.get('/', (req, res) => {
 //     res.send('Hello World!')
